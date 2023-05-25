@@ -28,4 +28,16 @@ public class RunnerService {
             return -1.0;
         }
     }
+
+    public double getAverageHeight() {
+        List<RunnerEntity> runners = runnerRepository.findAll();
+        if(runners.size() == 0) {
+            return -1.0;
+        }
+        long sum = 0;
+        for(RunnerEntity runner : runners) {
+            sum += runner.getHeight();
+        }
+        return (double)sum / (double)runners.size();
+    }
 }

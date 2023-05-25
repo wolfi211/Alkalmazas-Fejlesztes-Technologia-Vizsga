@@ -47,6 +47,21 @@ public class RunnerRestController {
         return runnerRepository.findAll();
     }
 
+    @GetMapping("/tallestrunner")
+    public String getTallestRunnerName() {
+        List<RunnerEntity> runners = runnerRepository.findAll();
+        if(runners.size() > 0) {
+            RunnerEntity tallest = runners.get(0);
+            for(RunnerEntity runner : runners) {
+                if(runner.getHeight() > tallest.getHeight()){
+                    tallest = runner;
+                }
+            }
+            return tallest.getRunnerName();
+        }
+        return "";
+    }
+
     @PostMapping("/{id}/addlaptime")
     public ResponseEntity addLaptime(@PathVariable Long id, @RequestBody LapTimeRequest lapTimeRequest) {
         RunnerEntity runner = runnerRepository.findById(id).orElse(null);

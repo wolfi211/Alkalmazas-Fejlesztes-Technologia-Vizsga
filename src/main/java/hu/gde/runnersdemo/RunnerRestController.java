@@ -14,11 +14,13 @@ public class RunnerRestController {
     @Autowired
     private LapTimeRepository lapTimeRepository;
     private RunnerRepository runnerRepository;
+    private SponsorRepository sponsorRepository;
 
     @Autowired
-    public RunnerRestController(RunnerRepository runnerRepository, LapTimeRepository lapTimeRepository) {
+    public RunnerRestController(RunnerRepository runnerRepository, LapTimeRepository lapTimeRepository, SponsorRepository sponsorRepository) {
         this.runnerRepository = runnerRepository;
         this.lapTimeRepository = lapTimeRepository;
+        this.sponsorRepository = sponsorRepository;
     }
 
     @GetMapping("/{id}")
@@ -76,6 +78,22 @@ public class RunnerRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Runner with ID " + id + " not found");
         }
     }
+
+    @PostMapping("/{id}/setsponsor")
+    public ResponseEntity setSponsor(@PathVariable Long id, @RequestBody SponsorRequest sponsorRequest) {
+        RunnerEntity runner = runnerRepository.findById(id).orElse(null);
+        SponsorEntity sponsor = sponsorRepository.findById(sponsorRequest.getId()).orElse(null);
+        if(runner == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Runner with ID " + id + " not found");
+        }
+        if(sponsor == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sponsor with ID " + sponsorRequest.getId() + " not found");
+        }
+        runner.setSponsor(sponsor);
+        runnerRepository.save(runner);
+        return ResponseEntity.ok().build();
+    }
+
     public static class LapTimeRequest {
         private int lapTimeSeconds;
 
@@ -85,6 +103,18 @@ public class RunnerRestController {
 
         public void setLapTimeSeconds(int lapTimeSeconds) {
             this.lapTimeSeconds = lapTimeSeconds;
+        }
+    }
+
+    public static class SponsorRequest {
+        private long id;
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
         }
     }
 }
